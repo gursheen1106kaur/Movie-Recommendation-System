@@ -103,6 +103,19 @@ Select a movie from the dropdown menu and click **Recommend** to receive five si
 - Improve UI with custom styling
 
 ---
+---
+
+## 📝 Note
+
+The file `models/similarity.pkl` is not included in this repository because it exceeds GitHub's 100 MB file size limit.
+
+To generate the required model files, run:
+
+```bash
+python train.py
+```
+
+This will recreate the similarity model required for the Movie Recommendation System.
 
 ## 👨‍💻 Author
 
