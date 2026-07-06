@@ -8,7 +8,17 @@ st.set_page_config(
 
 # Load the saved files
 movies = pickle.load(open("models/movies.pkl", "rb"))
-similarity = pickle.load(open("models/similarity.pkl", "rb"))
+
+import os
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+
+if os.path.exists("models/similarity.pkl"):
+    similarity = pickle.load(open("models/similarity.pkl", "rb"))
+else:
+    tfidf = TfidfVectorizer(stop_words="english")
+    tfidf_matrix = tfidf.fit_transform(movies["genres"])
+    similarity = cosine_similarity(tfidf_matrix)
 
 st.title("🎬 Movie Recommendation System")
 st.write("Welcome! 👋")
