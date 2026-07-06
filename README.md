@@ -5,6 +5,9 @@
 A simple Movie Recommendation System built using **Python**, **Pandas**, **Scikit-learn**, and **Streamlit**.
  The application recommends movies based on genre similarity using TF-IDF Vectorization and Cosine Similarity.
 
+## 🚀 Live Demo
+
+🔗 **Streamlit App:https://movie-recommendation-system-vo47i66ehiqpagkch2eftv.streamlit.app/
 ---
 
 ## 📌 Features
