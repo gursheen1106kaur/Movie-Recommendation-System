@@ -1,51 +1,45 @@
 import streamlit as st
-import pickle
 import pandas as pd
-st.set_page_config(
-    page_title="Movie Recommendation System",
-    page_icon="🎬",
-    layout="centered")
-
-# Load the saved files
-movies = pickle.load(open("models/movies.pkl", "rb"))
-
-import os
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-if os.path.exists("models/similarity.pkl"):
-    similarity = pickle.load(open("models/similarity.pkl", "rb"))
-else:
-    tfidf = TfidfVectorizer(stop_words="english")
-    tfidf_matrix = tfidf.fit_transform(movies["genres"])
-    similarity = cosine_similarity(tfidf_matrix)
-
-st.title("🎬 Movie Recommendation System")
-st.write("Welcome! 👋")
-st.write("Select your favourite movie and get 5 similar movie recommendations.")
-
-st.sidebar.header("About Project")
-
-st.sidebar.write("""
-This Movie Recommendation System suggests movies based on genre similarity.
-
-Technologies Used:
-- Python
-- Pandas
-- Scikit-learn
-- Streamlit
-""")
-
-st.write("Welcome! Select a movie and I'll recommend similar movies.")
-movie_list = movies['title'].values
-
-selected_movie = st.selectbox(
-    "Select a Movie",
-    movie_list
+# -------------------------------
+# Page Configuration
+# -------------------------------
+st.set_page_config(
+    page_title="Movie Recommendation System",
+    page_icon="🎬",
+    layout="centered"
 )
 
+# -------------------------------
+# Load Dataset
+# -------------------------------
+movies = pd.read_csv("dataset/movies.csv")
+
+# Keep only required columns
+movies = movies[["movieId", "title", "genres"]]
+
+# Replace missing values
+movies.fillna("", inplace=True)
+
+# -------------------------------
+# Create Similarity Matrix
+# -------------------------------
+with st.spinner("Preparing recommendation model..."):
+
+    tfidf = TfidfVectorizer(stop_words="english")
+
+    tfidf_matrix = tfidf.fit_transform(movies["genres"])
+
+    similarity = cosine_similarity(tfidf_matrix)
+
+# -------------------------------
+# Recommendation Function
+# -------------------------------
 def recommend(movie):
-    movie_index = movies[movies['title'] == movie].index[0]
+
+    movie_index = movies[movies["title"] == movie].index[0]
 
     distances = similarity[movie_index]
 
@@ -62,12 +56,42 @@ def recommend(movie):
 
     return recommended_movies
 
+# -------------------------------
+# Streamlit UI
+# -------------------------------
+st.title("🎬 Movie Recommendation System")
 
-if st.button("Recommend"):
+st.write(
+    "Welcome! 👋 Select your favourite movie and get 5 similar movie recommendations."
+)
+
+# Sidebar
+st.sidebar.header("About Project")
+
+st.sidebar.write("""
+### Technologies Used
+
+- Python
+- Pandas
+- Scikit-learn
+- Streamlit
+
+This project recommends movies based on **genre similarity**
+using **TF-IDF Vectorization** and **Cosine Similarity**.
+""")
+
+movie_list = movies["title"].values
+
+selected_movie = st.selectbox(
+    "🎥 Select a Movie",
+    movie_list
+)
+
+if st.button("🎬 Recommend"):
 
     recommendations = recommend(selected_movie)
 
-    st.subheader("Recommended Movies")
+    st.success("Top 5 Recommended Movies")
 
-    for movie in recommendations:
-        st.write(movie)
+    for i, movie in enumerate(recommendations, start=1):
+        st.write(f"**{i}. {movie}**")
